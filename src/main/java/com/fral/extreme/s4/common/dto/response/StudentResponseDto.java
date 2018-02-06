@@ -13,6 +13,10 @@ public class StudentResponseDto {
     private String lastName;
     private Collection<ClassShortInfoDto> classes;
 
+    public StudentResponseDto(Student studentModel) {
+        this.initializeFromModel(studentModel);
+    }
+
     public Long getId() {
         return id;
     }
@@ -42,33 +46,36 @@ public class StudentResponseDto {
     }
 
     public void setClasses(Collection<ClassShortInfoDto> classes) {
-        this.classes = new HashSet<>();
+        if (this.classes == null)
+            this.classes = new HashSet<>();
+
         this.classes.addAll(classes);
     }
 
     public void addNewClass(ClassShortInfoDto newClass) {
+        if (this.classes == null)
+            this.classes = new HashSet<>();
+
         this.classes.add(newClass);
     }
 
-    public static StudentResponseDto buildFrom(Student studentInfo) {
-        StudentResponseDto response = new StudentResponseDto();
+    private void initializeFromModel(Student model) {
+        if (model != null) {
+            this.id = model.getId();
+            this.firstName = model.getFirstName();
+            this.lastName = model.getLastName();
 
-        response.setId(studentInfo.getId());
-        response.setFirstName(studentInfo.getFirstName());
-        response.setLastName(studentInfo.getLastName());
+            if (model.getClasses() != null) {
+                for (Class entity : model.getClasses()) {
+                    ClassShortInfoDto classDto = new ClassShortInfoDto();
+                    classDto.setId(entity.getId());
+                    classDto.setCode(entity.getCode());
+                    classDto.setTitle(entity.getTitle());
+                    classDto.setDescription(entity.getDescription());
 
-        if (studentInfo.getClasses() != null) {
-            for (Class entity : studentInfo.getClasses()) {
-                ClassShortInfoDto classDto = new ClassShortInfoDto();
-                classDto.setId(entity.getId());
-                classDto.setCode(entity.getCode());
-                classDto.setTitle(entity.getTitle());
-                classDto.setDescription(entity.getDescription());
-
-                response.addNewClass(classDto);
+                    this.addNewClass(classDto);
+                }
             }
         }
-
-        return response;
     }
 }

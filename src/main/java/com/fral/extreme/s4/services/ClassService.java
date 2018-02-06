@@ -24,7 +24,7 @@ public class ClassService {
     public ClassResponseDto find(Long classId) {
         Class retrievedClass = systemDao.load(Class.class, classId);
 
-        ClassResponseDto response = ClassResponseDto.buildFrom(retrievedClass);
+        ClassResponseDto response = new ClassResponseDto(retrievedClass);
 
         return response;
     }
@@ -35,7 +35,7 @@ public class ClassService {
         Collection<Class> retrievedClasses = systemDao.find(Class.class);
 
         for (Class entity : retrievedClasses) {
-            ClassResponseDto response = ClassResponseDto.buildFrom(entity);
+            ClassResponseDto response = new ClassResponseDto(entity);
 
             resultCollection.add(response);
         }
@@ -48,21 +48,21 @@ public class ClassService {
 
         Class persistedClass = systemDao.persist(newClass);
 
-        ClassResponseDto responseDto = ClassResponseDto.buildFrom(persistedClass);
+        ClassResponseDto responseDto = new ClassResponseDto(persistedClass);
 
         return responseDto;
     }
 
     public ClassResponseDto update(ClassUpdateRequestDto classToUpdate) {
-        Class update = systemDao.load(Class.class, classToUpdate.getId());
+        Class toBeUpdated = systemDao.load(Class.class, classToUpdate.getId());
 
-        update.setCode(classToUpdate.getCode());
-        update.setTitle(classToUpdate.getTitle());
-        update.setDescription(classToUpdate.getDescription());
+        toBeUpdated.setCode(classToUpdate.getCode());
+        toBeUpdated.setTitle(classToUpdate.getTitle());
+        toBeUpdated.setDescription(classToUpdate.getDescription());
 
-        Class updated = systemDao.persist(update);
+        Class updatedClass = systemDao.persist(toBeUpdated);
 
-        ClassResponseDto requestDto = ClassResponseDto.buildFrom(updated);
+        ClassResponseDto requestDto = new ClassResponseDto(updatedClass);
 
         return requestDto;
     }

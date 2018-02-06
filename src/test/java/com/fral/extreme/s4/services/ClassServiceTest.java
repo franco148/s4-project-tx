@@ -1,20 +1,26 @@
 package com.fral.extreme.s4.services;
 
 import com.fral.extreme.s4.common.dto.response.ClassResponseDto;
+import com.fral.extreme.s4.config.SpringTestContext;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
 import com.fral.extreme.s4.domain.repository.S4SystemDao;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
+@ContextConfiguration(classes = SpringTestContext.class)
 public class ClassServiceTest {
 
     @Mock
@@ -91,33 +97,5 @@ public class ClassServiceTest {
     public void testGetAll_DaoFindMethod_ExecutedOnce() {
         classService.getAll();
         verify(systemDao, Mockito.times(1)).find(Class.class);
-    }
-
-    @Test
-    public void save() {
-    }
-
-    @Test
-    public void update() {
-    }
-
-    @Test
-    public void delete() {
-    }
-
-    @Test
-    public void getClassesAssignedToStudent() {
-    }
-
-    @Test
-    public void findByProperty() {
-    }
-
-    @Test
-    public void registerNewStudent() {
-    }
-
-    @Test
-    public void registerStudents() {
     }
 }

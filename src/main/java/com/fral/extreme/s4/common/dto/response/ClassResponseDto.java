@@ -14,6 +14,10 @@ public class ClassResponseDto {
     private String description;
     private Collection<StudentShortInfoDto> registeredStudents;
 
+    public ClassResponseDto(Class classModel) {
+        this.initializeFromModel(classModel);
+    }
+
     public Long getId() {
         return id;
     }
@@ -51,33 +55,36 @@ public class ClassResponseDto {
     }
 
     public void setRegisteredStudents(Collection<StudentShortInfoDto> registeredStudents) {
-        this.registeredStudents = new HashSet<>();
+        if (this.registeredStudents == null)
+            this.registeredStudents = new HashSet<>();
+
         this.registeredStudents.addAll(registeredStudents);
     }
 
     public void addNewStudent(StudentShortInfoDto student) {
+        if (this.registeredStudents == null)
+            this.registeredStudents = new HashSet<>();
+
         this.registeredStudents.add(student);
     }
 
-    public static ClassResponseDto buildFrom(Class classInfo) {
-        ClassResponseDto response = new ClassResponseDto();
+    public void initializeFromModel(Class classModel) {
+        if (classModel != null) {
+            this.id = classModel.getId();
+            this.code = classModel.getCode();
+            this.title = classModel.getTitle();
+            this.description = classModel.getDescription();
 
-        response.setId(classInfo.getId());
-        response.setCode(classInfo.getCode());
-        response.setTitle(classInfo.getTitle());
-        response.setDescription(classInfo.getDescription());
+            if (classModel.getStudents() != null) {
+                for (Student student : classModel.getStudents()) {
+                    StudentShortInfoDto studentDto = new StudentShortInfoDto();
+                    studentDto.setId(student.getId());
+                    studentDto.setFirstName(student.getFirstName());
+                    studentDto.setLastName(student.getLastName());
 
-        if (classInfo.getStudents() != null) {
-            for (Student student : classInfo.getStudents()) {
-                StudentShortInfoDto studentDto = new StudentShortInfoDto();
-                studentDto.setId(student.getId());
-                studentDto.setFirstName(student.getFirstName());
-                studentDto.setLastName(student.getLastName());
-
-                response.addNewStudent(studentDto);
+                    this.addNewStudent(studentDto);
+                }
             }
         }
-
-        return response;
     }
 }

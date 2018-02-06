@@ -1,6 +1,5 @@
 package com.fral.extreme.s4.services;
 
-import com.fral.extreme.s4.common.dto.request.ClassRequestDto;
 import com.fral.extreme.s4.common.dto.request.ClassUpdateRequestDto;
 import com.fral.extreme.s4.common.dto.request.StudentRequestDto;
 import com.fral.extreme.s4.common.dto.request.StudentUpdateRequestDto;
@@ -26,7 +25,7 @@ public class StudentService {
     public StudentResponseDto find(Long studentId) {
         Student retrievedStudent = systemDao.load(Student.class, studentId);
 
-        StudentResponseDto response = StudentResponseDto.buildFrom(retrievedStudent);
+        StudentResponseDto response = new StudentResponseDto(retrievedStudent);
 
         return response;
     }
@@ -37,7 +36,7 @@ public class StudentService {
         Collection<Student> retrievedStudents = systemDao.find(Student.class);
 
         for (Student entity : retrievedStudents) {
-            StudentResponseDto response = StudentResponseDto.buildFrom(entity);
+            StudentResponseDto response = new StudentResponseDto(entity);
 
             resultCollection.add(response);
         }
@@ -50,7 +49,7 @@ public class StudentService {
 
         Student persistedStudent = systemDao.persist(newStudent);
 
-        StudentResponseDto responseDto = StudentResponseDto.buildFrom(persistedStudent);
+        StudentResponseDto responseDto = new StudentResponseDto(persistedStudent);
 
         return responseDto;
     }
@@ -63,7 +62,7 @@ public class StudentService {
 
         Student updated = systemDao.persist(toUpdate);
 
-        return StudentResponseDto.buildFrom(updated);
+        return new StudentResponseDto(updated);
     }
 
     public boolean delete(Long studentId) {
