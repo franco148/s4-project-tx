@@ -1,5 +1,6 @@
 package com.fral.extreme.s4.services;
 
+import com.fral.extreme.s4.common.dto.StudentRequestDto;
 import com.fral.extreme.s4.common.dto.StudentResponseDto;
 import com.fral.extreme.s4.config.SpringTestContext;
 import com.fral.extreme.s4.domain.model.Class;
@@ -101,15 +102,23 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void save() {
+    public void testSave_DaoPersistMethod_WithCorrectParameters() {
+        studentService.save(new StudentRequestDto());
+        verify(systemDao).persist(new StudentRequestDto());
     }
 
     @Test
-    public void update() {
+    public void testSave_DaoPersistMethod_ExecutedOnce() {
+        studentService.save(new StudentRequestDto());
+        verify(systemDao, Mockito.times(1)).persist(new StudentRequestDto());
     }
 
     @Test
-    public void delete() {
+    public void testUpdate_DaoPersistMethod_Called() {
+    }
+
+    @Test
+    public void testDelete_DaoDeleteMethod_ExecutedOnce() {
     }
 
     @Test
