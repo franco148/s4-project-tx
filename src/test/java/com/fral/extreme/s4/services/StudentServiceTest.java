@@ -6,6 +6,7 @@ import com.fral.extreme.s4.config.SpringTestContext;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
 import com.fral.extreme.s4.domain.repository.S4SystemDao;
+import com.fral.extreme.s4.exception.EntityNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testFind_ReturnedValueShouldBe_DtoClass() {
+    public void testFind_ReturnedValueShouldBe_DtoClass() throws EntityNotFoundException {
 
         StudentResponseDto actualResult = studentService.find(1L);
         Long expectedId = 1L;
@@ -53,7 +54,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testFind_DaoLoadMethod_WithCorrectParameters() {
+    public void testFind_DaoLoadMethod_WithCorrectParameters() throws EntityNotFoundException {
 
         //Verifying that the persistence layer calls LOAD method
         studentService.find(1L);
@@ -61,14 +62,14 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testFind_DaoLoadMethod_ExecutedOnce() {
+    public void testFind_DaoLoadMethod_ExecutedOnce() throws EntityNotFoundException {
 
         studentService.find(1L);
         verify(systemDao, Mockito.times(1)).load(Student.class, 1L);
     }
 
     @Test
-    public void testFind_DaoLoadMethod_WithWrongParameters() {
+    public void testFind_DaoLoadMethod_WithWrongParameters() throws EntityNotFoundException {
 
         studentService.find(1L);
         verify(systemDao, Mockito.never()).load(Student.class, 10L);
@@ -76,7 +77,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testFind_DaoLoadMethod_NonExecutedMoreThanOnce() {
+    public void testFind_DaoLoadMethod_NonExecutedMoreThanOnce() throws EntityNotFoundException {
 
         studentService.find(1L);
         verify(systemDao, Mockito.atMost(1)).load(Student.class, 1L);
