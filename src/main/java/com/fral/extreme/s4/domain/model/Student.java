@@ -3,6 +3,7 @@ package com.fral.extreme.s4.domain.model;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Student {
@@ -30,6 +31,12 @@ public class Student {
     }
 
     public Student(String lastName, String firstName) {
+        this.lastName = lastName;
+        this.firstName = firstName;
+    }
+
+    public Student(Long id, String lastName, String firstName) {
+        this.id = id;
         this.lastName = lastName;
         this.firstName = firstName;
     }
@@ -69,5 +76,21 @@ public class Student {
 
     public void setClass(Class newClass) {
         this.classes.add(newClass);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return Objects.equals(id, student.id) &&
+                Objects.equals(lastName, student.lastName) &&
+                Objects.equals(firstName, student.firstName);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, lastName, firstName, classes);
     }
 }

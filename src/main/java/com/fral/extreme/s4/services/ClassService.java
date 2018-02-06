@@ -8,6 +8,7 @@ import com.fral.extreme.s4.common.dto.response.ClassShortInfoDto;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
 import com.fral.extreme.s4.domain.repository.S4SystemDao;
+import com.fral.extreme.s4.domain.repository.S4SystemMockDao;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

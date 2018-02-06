@@ -6,7 +6,7 @@ import java.util.Collection;
 public interface S4SystemDao {
 
     <T> T persist(T entity);
-    <T> T persist(T[] entities);
+    <T> Collection<T> persist(T[] entities);
     <T> Collection<T> find(Class<T> entityClass);
     <T> T load(Class<T> entityClass, Serializable id);
     <T> Collection<T> find(String customQuery);
