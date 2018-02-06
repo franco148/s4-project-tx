@@ -1,5 +1,6 @@
 package com.fral.extreme.s4.common.dto.response;
 
+import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
 
 import java.util.Collection;
@@ -11,7 +12,7 @@ public class ClassResponseDto {
     private String code;
     private String title;
     private String description;
-    private Collection<Student> registeredStudents;
+    private Collection<StudentShortInfoDto> registeredStudents;
 
     public Long getId() {
         return id;
@@ -45,12 +46,36 @@ public class ClassResponseDto {
         this.description = description;
     }
 
-    public Collection<Student> getRegisteredStudents() {
+    public Collection<StudentShortInfoDto> getRegisteredStudents() {
         return registeredStudents;
     }
 
-    public void setRegisteredStudents(Collection<Student> registeredStudents) {
+    public void setRegisteredStudents(Collection<StudentShortInfoDto> registeredStudents) {
         this.registeredStudents = new HashSet<>();
         this.registeredStudents.addAll(registeredStudents);
+    }
+
+    public void addNewStudent(StudentShortInfoDto student) {
+        this.registeredStudents.add(student);
+    }
+
+    public static ClassResponseDto buildFrom(Class classInfo) {
+        ClassResponseDto response = new ClassResponseDto();
+
+        response.setId(classInfo.getId());
+        response.setCode(classInfo.getCode());
+        response.setTitle(classInfo.getTitle());
+        response.setDescription(classInfo.getDescription());
+
+        for (Student student : classInfo.getStudents()) {
+            StudentShortInfoDto studentDto = new StudentShortInfoDto();
+            studentDto.setId(student.getId());
+            studentDto.setFirstName(student.getFirstName());
+            studentDto.setLastName(student.getLastName());
+
+            response.addNewStudent(studentDto);
+        }
+
+        return response;
     }
 }

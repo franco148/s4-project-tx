@@ -2,9 +2,9 @@ package com.fral.extreme.s4.services;
 
 import com.fral.extreme.s4.common.dto.request.ClassRequestDto;
 import com.fral.extreme.s4.common.dto.request.ClassUpdateRequestDto;
-import com.fral.extreme.s4.common.dto.request.StudentRequestDto;
 import com.fral.extreme.s4.common.dto.request.StudentUpdateRequestDto;
 import com.fral.extreme.s4.common.dto.response.ClassResponseDto;
+import com.fral.extreme.s4.common.dto.response.ClassShortInfoDto;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
 import com.fral.extreme.s4.domain.repository.S4SystemDao;
@@ -24,12 +24,7 @@ public class ClassService {
     public ClassResponseDto find(Long classId) {
         Class retrievedClass = systemDao.load(Class.class, classId);
 
-        ClassResponseDto response = new ClassResponseDto();
-        response.setId(retrievedClass.getId());
-        response.setCode(retrievedClass.getCode());
-        response.setTitle(retrievedClass.getTitle());
-        response.setDescription(retrievedClass.getDescription());
-        response.setRegisteredStudents(retrievedClass.getStudents());
+        ClassResponseDto response = ClassResponseDto.buildFrom(retrievedClass);
 
         return response;
     }
@@ -40,12 +35,7 @@ public class ClassService {
         Collection<Class> retrievedClasses = systemDao.find(Class.class);
 
         for (Class entity : retrievedClasses) {
-            ClassResponseDto response = new ClassResponseDto();
-            response.setId(entity.getId());
-            response.setCode(entity.getCode());
-            response.setTitle(entity.getTitle());
-            response.setDescription(entity.getDescription());
-            response.setRegisteredStudents(entity.getStudents());
+            ClassResponseDto response = ClassResponseDto.buildFrom(entity);
 
             resultCollection.add(response);
         }
@@ -58,12 +48,7 @@ public class ClassService {
 
         Class persistedClass = systemDao.persist(newClass);
 
-        ClassResponseDto responseDto = new ClassResponseDto();
-        responseDto.setId(persistedClass.getId());
-        responseDto.setCode(persistedClass.getCode());
-        responseDto.setTitle(persistedClass.getTitle());
-        responseDto.setDescription(persistedClass.getDescription());
-        responseDto.setRegisteredStudents(persistedClass.getStudents());
+        ClassResponseDto responseDto = ClassResponseDto.buildFrom(persistedClass);
 
         return responseDto;
     }
@@ -77,12 +62,7 @@ public class ClassService {
 
         Class updated = systemDao.persist(update);
 
-        ClassResponseDto requestDto = new ClassResponseDto();
-        requestDto.setId(update.getId());
-        requestDto.setCode(updated.getCode());
-        requestDto.setTitle(updated.getTitle());
-        requestDto.setDescription(updated.getDescription());
-        requestDto.setRegisteredStudents(updated.getStudents());
+        ClassResponseDto requestDto = ClassResponseDto.buildFrom(updated);
 
         return requestDto;
     }
@@ -93,12 +73,12 @@ public class ClassService {
         return systemDao.delete(toBeDeleted);
     }
 
-    public Set<ClassResponseDto> getClassesAssignedToStudent(Long studentId) {
+    public Set<ClassShortInfoDto> getClassesAssignedToStudent(Long studentId) {
         Student student = systemDao.load(Student.class, studentId);
 
-        Set<ClassResponseDto> responseDtoList = new HashSet<>();
+        Set<ClassShortInfoDto> responseDtoList = new HashSet<>();
         for (Class entity : student.getClasses()) {
-            ClassResponseDto dto = new ClassResponseDto();
+            ClassShortInfoDto dto = new ClassShortInfoDto();
             dto.setId(entity.getId());
             dto.setCode(entity.getCode());
             dto.setTitle(entity.getTitle());
