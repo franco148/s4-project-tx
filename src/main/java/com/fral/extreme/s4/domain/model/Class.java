@@ -67,4 +67,8 @@ public class Class {
         this.students = new ArrayList<>();
         this.students.addAll(students);
     }
+
+    public void setStudent(Student student) {
+        this.students.add(student);
+    }
 }

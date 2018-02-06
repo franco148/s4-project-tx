@@ -1,8 +1,8 @@
 package com.fral.extreme.s4.services;
 
-import com.fral.extreme.s4.common.dto.ClassRequestDto;
-import com.fral.extreme.s4.common.dto.StudentRequestDto;
-import com.fral.extreme.s4.common.dto.StudentResponseDto;
+import com.fral.extreme.s4.common.dto.request.ClassRequestDto;
+import com.fral.extreme.s4.common.dto.request.StudentRequestDto;
+import com.fral.extreme.s4.common.dto.response.StudentResponseDto;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.repository.S4SystemDao;
 import org.springframework.stereotype.Service;

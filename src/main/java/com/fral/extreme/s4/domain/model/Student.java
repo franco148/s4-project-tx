@@ -66,4 +66,8 @@ public class Student {
         this.classes = new ArrayList<>();
         this.classes.addAll(classes);
     }
+
+    public void setClass(Class newClass) {
+        this.classes.add(newClass);
+    }
 }

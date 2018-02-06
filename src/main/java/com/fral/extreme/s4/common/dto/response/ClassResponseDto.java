@@ -1,4 +1,4 @@
-package com.fral.extreme.s4.common.dto;
+package com.fral.extreme.s4.common.dto.response;
 
 import com.fral.extreme.s4.domain.model.Student;
 
