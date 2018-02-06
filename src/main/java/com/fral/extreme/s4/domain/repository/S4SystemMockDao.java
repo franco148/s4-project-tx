@@ -11,6 +11,9 @@ import java.util.*;
 @Repository
 public class S4SystemMockDao implements S4SystemDao {
 
+    private static long STUDENTS_ID_TRACKER = 0;
+    private static long CLASSES_ID_TRACKER = 0;
+
     private List<Class> classesCollection;
     private List<Student> studentsCollection;
 
@@ -30,8 +33,9 @@ public class S4SystemMockDao implements S4SystemDao {
             if (position != -1) {
                 classesCollection.set(position, entityToAdd);
             } else {
-                entityToAdd.setId(classesCollection.size() + 1L);
+                entityToAdd.setId(CLASSES_ID_TRACKER);
                 classesCollection.add(entityToAdd);
+                CLASSES_ID_TRACKER += 1;
             }
 
             return entity;
@@ -42,8 +46,9 @@ public class S4SystemMockDao implements S4SystemDao {
             if (position != -1) {
                 studentsCollection.set(position, studentToAdd);
             } else {
-                studentToAdd.setId(studentsCollection.size() + 1L);
+                studentToAdd.setId(STUDENTS_ID_TRACKER);
                 studentsCollection.add(studentToAdd);
+                STUDENTS_ID_TRACKER += 1;
             }
 
             return entity;
@@ -72,15 +77,13 @@ public class S4SystemMockDao implements S4SystemDao {
         if (entityClass.equals(Class.class)) {
             Class classResponse = classesCollection.stream()
                                                    .filter(c -> c.getId().equals(id))
-                                                   .findFirst()
-                                                   .get();
+                                                   .findFirst().orElse(null);
 
             return entityClass.cast(classResponse);
         } else if (entityClass.equals(Student.class)) {
             Student studentResponse = studentsCollection.stream()
                                                         .filter(s -> s.getId().equals(id))
-                                                        .findFirst()
-                                                        .get();
+                                                        .findFirst().orElse(null);
 
             return entityClass.cast(studentResponse);
         }

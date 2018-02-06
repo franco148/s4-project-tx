@@ -8,6 +8,8 @@ import com.fral.extreme.s4.common.dto.response.ClassShortInfoDto;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
 import com.fral.extreme.s4.domain.repository.S4SystemDao;
+import com.fral.extreme.s4.exception.EntityNotFoundException;
+import com.fral.extreme.s4.exception.PersistenceException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,10 +23,14 @@ public class ClassService {
     @Resource
     private S4SystemDao systemDao;
 
-    public ClassResponseDto find(Long classId) {
+    public ClassResponseDto find(Long classId) throws EntityNotFoundException {
         Class retrievedClass = systemDao.load(Class.class, classId);
 
-        ClassResponseDto response = ClassResponseDto.buildFrom(retrievedClass);
+        if (retrievedClass == null) {
+            throw new EntityNotFoundException();
+        }
+
+        ClassResponseDto response = new ClassResponseDto(retrievedClass);
 
         return response;
     }
@@ -35,7 +41,7 @@ public class ClassService {
         Collection<Class> retrievedClasses = systemDao.find(Class.class);
 
         for (Class entity : retrievedClasses) {
-            ClassResponseDto response = ClassResponseDto.buildFrom(entity);
+            ClassResponseDto response = new ClassResponseDto(entity);
 
             resultCollection.add(response);
         }
@@ -43,26 +49,40 @@ public class ClassService {
         return resultCollection;
     }
 
-    public ClassResponseDto save(ClassRequestDto classToSave) {
+    public ClassResponseDto save(ClassRequestDto classToSave) throws PersistenceException {
         Class newClass = new Class(classToSave.getCode(), classToSave.getTitle(), classToSave.getDescription());
 
-        Class persistedClass = systemDao.persist(newClass);
+        Class persistedClass;
+        try {
+            persistedClass = systemDao.persist(newClass);
+        } catch (Exception ex) {
+            throw new PersistenceException();
+        }
 
-        ClassResponseDto responseDto = ClassResponseDto.buildFrom(persistedClass);
+        ClassResponseDto responseDto = new ClassResponseDto(persistedClass);
 
         return responseDto;
     }
 
-    public ClassResponseDto update(ClassUpdateRequestDto classToUpdate) {
-        Class update = systemDao.load(Class.class, classToUpdate.getId());
+    public ClassResponseDto update(ClassUpdateRequestDto classToUpdate) throws EntityNotFoundException, PersistenceException {
+        Class toBeUpdated = systemDao.load(Class.class, classToUpdate.getId());
 
-        update.setCode(classToUpdate.getCode());
-        update.setTitle(classToUpdate.getTitle());
-        update.setDescription(classToUpdate.getDescription());
+        if (toBeUpdated == null) {
+            throw new EntityNotFoundException();
+        }
 
-        Class updated = systemDao.persist(update);
+        toBeUpdated.setCode(classToUpdate.getCode());
+        toBeUpdated.setTitle(classToUpdate.getTitle());
+        toBeUpdated.setDescription(classToUpdate.getDescription());
 
-        ClassResponseDto requestDto = ClassResponseDto.buildFrom(updated);
+        Class updatedClass;
+        try {
+            updatedClass = systemDao.persist(toBeUpdated);
+        } catch (Exception ex) {
+            throw new PersistenceException();
+        }
+
+        ClassResponseDto requestDto = new ClassResponseDto(updatedClass);
 
         return requestDto;
     }
@@ -73,8 +93,12 @@ public class ClassService {
         return systemDao.delete(toBeDeleted);
     }
 
-    public Set<ClassShortInfoDto> getClassesAssignedToStudent(Long studentId) {
+    public Set<ClassShortInfoDto> getClassesAssignedToStudent(Long studentId) throws EntityNotFoundException {
         Student student = systemDao.load(Student.class, studentId);
+
+        if (student == null) {
+            throw new EntityNotFoundException();
+        }
 
         Set<ClassShortInfoDto> responseDtoList = new HashSet<>();
         for (Class entity : student.getClasses()) {
@@ -94,21 +118,33 @@ public class ClassService {
         return null;
     }
 
-    public boolean registerNewStudent(Long classId, StudentUpdateRequestDto student) {
+    public boolean registerNewStudent(Long classId, StudentUpdateRequestDto student) throws EntityNotFoundException, PersistenceException {
         Class retrievedClass = systemDao.load(Class.class, classId);
+
+        if (retrievedClass == null) {
+            throw new EntityNotFoundException();
+        }
 
         Student newStudent = new Student(student.getLastName(), student.getFirstName());
         newStudent.setId(student.getId());
 
         retrievedClass.setStudent(newStudent);
 
-        Class savedClass = systemDao.persist(retrievedClass);
+        Class savedClass;
+        try {
+            savedClass = systemDao.persist(retrievedClass);
+        } catch (Exception ex) {
+            throw new PersistenceException();
+        }
 
         return savedClass != null;
     }
 
-    public boolean registerStudents(Long classId, Set<StudentUpdateRequestDto> students) {
+    public boolean registerStudents(Long classId, Set<StudentUpdateRequestDto> students) throws EntityNotFoundException, PersistenceException {
         Class retrievedClass = systemDao.load(Class.class, classId);
+        if (retrievedClass == null) {
+            throw new EntityNotFoundException();
+        }
 
         for (StudentUpdateRequestDto entity : students) {
             Student newStudent = new Student(entity.getLastName(), entity.getFirstName());
@@ -117,7 +153,12 @@ public class ClassService {
             retrievedClass.setStudent(newStudent);
         }
 
-        Class savedClass = systemDao.persist(retrievedClass);
+        Class savedClass;
+        try {
+            savedClass = systemDao.persist(retrievedClass);
+        } catch (Exception ex) {
+            throw new PersistenceException();
+        }
 
         return savedClass != null;
     }

@@ -5,6 +5,8 @@ import com.fral.extreme.s4.common.dto.request.ClassUpdateRequestDto;
 import com.fral.extreme.s4.common.dto.request.StudentUpdateRequestDto;
 import com.fral.extreme.s4.common.dto.response.ClassResponseDto;
 import com.fral.extreme.s4.common.dto.response.ClassShortInfoDto;
+import com.fral.extreme.s4.exception.EntityNotFoundException;
+import com.fral.extreme.s4.exception.PersistenceException;
 import com.fral.extreme.s4.services.ClassService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,7 @@ public class ClassesRestController {
             value = "/{classId}",
             method = RequestMethod.GET
     )
-    public ResponseEntity<ClassResponseDto> find(@PathVariable("classId") Long classId) {
+    public ResponseEntity<ClassResponseDto> find(@PathVariable("classId") Long classId) throws EntityNotFoundException {
         return ResponseEntity.ok(studentService.find(classId));
     }
 
@@ -40,14 +42,14 @@ public class ClassesRestController {
     @RequestMapping(
             method = RequestMethod.POST
     )
-    public ResponseEntity<ClassResponseDto> save(@RequestBody ClassRequestDto requestBody) {
+    public ResponseEntity<ClassResponseDto> save(@RequestBody ClassRequestDto requestBody) throws PersistenceException {
         return ResponseEntity.ok(studentService.save(requestBody));
     }
 
     @RequestMapping(
             method = RequestMethod.PATCH
     )
-    public ResponseEntity<ClassResponseDto> update(@RequestBody ClassUpdateRequestDto classRequestBody) {
+    public ResponseEntity<ClassResponseDto> update(@RequestBody ClassUpdateRequestDto classRequestBody) throws PersistenceException, EntityNotFoundException {
         return ResponseEntity.ok(studentService.update(classRequestBody));
     }
 
@@ -65,7 +67,7 @@ public class ClassesRestController {
             value = "/byStudentId",
             method = RequestMethod.GET
     )
-    public ResponseEntity<Set<ClassShortInfoDto>> getClassesByStudent(@RequestParam("studentId") Long studentId) {
+    public ResponseEntity<Set<ClassShortInfoDto>> getClassesByStudent(@RequestParam("studentId") Long studentId) throws EntityNotFoundException {
         return ResponseEntity.ok(studentService.getClassesAssignedToStudent(studentId));
     }
 
@@ -74,7 +76,7 @@ public class ClassesRestController {
             method = RequestMethod.POST
     )
     public ResponseEntity<String> registerInNewClass(@PathVariable("classId") Long classId,
-                                                     @RequestBody StudentUpdateRequestDto newClass) {
+                                                     @RequestBody StudentUpdateRequestDto newClass) throws PersistenceException, EntityNotFoundException {
         String response = studentService.registerNewStudent(classId, newClass) ? "{'message':'Operation completed SUCCESSFULLY'}" : "{'message':'Operation has FAILED'}";
 
         return ResponseEntity.ok(response);
@@ -85,7 +87,7 @@ public class ClassesRestController {
             method = RequestMethod.POST
     )
     public ResponseEntity<String> registerInManyClasses(@PathVariable("classId") Long classId,
-                                                        @RequestBody Set<StudentUpdateRequestDto> newStudents) {
+                                                        @RequestBody Set<StudentUpdateRequestDto> newStudents) throws PersistenceException, EntityNotFoundException {
         String response = studentService.registerStudents(classId, newStudents) ? "{'message':'Operation completed SUCCESSFULLY'}" : "{'message':'Operation has FAILED'}";
 
         return ResponseEntity.ok(response);
