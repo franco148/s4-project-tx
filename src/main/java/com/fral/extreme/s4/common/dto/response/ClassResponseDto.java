@@ -67,13 +67,15 @@ public class ClassResponseDto {
         response.setTitle(classInfo.getTitle());
         response.setDescription(classInfo.getDescription());
 
-        for (Student student : classInfo.getStudents()) {
-            StudentShortInfoDto studentDto = new StudentShortInfoDto();
-            studentDto.setId(student.getId());
-            studentDto.setFirstName(student.getFirstName());
-            studentDto.setLastName(student.getLastName());
+        if (classInfo.getStudents() != null) {
+            for (Student student : classInfo.getStudents()) {
+                StudentShortInfoDto studentDto = new StudentShortInfoDto();
+                studentDto.setId(student.getId());
+                studentDto.setFirstName(student.getFirstName());
+                studentDto.setLastName(student.getLastName());
 
-            response.addNewStudent(studentDto);
+                response.addNewStudent(studentDto);
+            }
         }
 
         return response;

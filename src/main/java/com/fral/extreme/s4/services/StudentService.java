@@ -92,7 +92,7 @@ public class StudentService {
         return null;
     }
 
-    public boolean takeClass(Long studentId, Class newClass) {
+    public boolean takeClass(Long studentId, ClassUpdateRequestDto newClass) {
         Student retrievedStudent = systemDao.load(Student.class, studentId);
 
         Class classToBeAdded = new Class(newClass.getCode(), newClass.getTitle(), newClass.getDescription());

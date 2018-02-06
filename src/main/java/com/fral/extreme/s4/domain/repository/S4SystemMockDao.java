@@ -12,11 +12,11 @@ import java.util.*;
 public class S4SystemMockDao implements S4SystemDao {
 
     private List<Class> classesCollection;
-    private Set<Student> studentsCollection;
+    private List<Student> studentsCollection;
 
     public S4SystemMockDao() {
         classesCollection = new ArrayList<>();
-        studentsCollection = new HashSet<>();
+        studentsCollection = new ArrayList<>();
     }
 
     @Override
@@ -36,8 +36,15 @@ public class S4SystemMockDao implements S4SystemDao {
 
             return entity;
         } else if (entity.getClass().equals(Student.class)) {
-            Student studentToAdd = (Student)entity;
-            studentToAdd.setId(studentsCollection.size() + 1L);
+            Student studentToAdd = Student.class.cast(entity);
+            int position = studentsCollection.indexOf(studentToAdd);
+
+            if (position != -1) {
+                studentsCollection.set(position, studentToAdd);
+            } else {
+                studentToAdd.setId(studentsCollection.size() + 1L);
+                studentsCollection.add(studentToAdd);
+            }
 
             return entity;
         }
