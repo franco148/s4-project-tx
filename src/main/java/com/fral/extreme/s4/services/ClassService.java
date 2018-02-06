@@ -3,11 +3,12 @@ package com.fral.extreme.s4.services;
 import com.fral.extreme.s4.common.dto.ClassRequestDto;
 import com.fral.extreme.s4.common.dto.ClassResponseDto;
 import com.fral.extreme.s4.domain.model.Class;
+import com.fral.extreme.s4.domain.model.Student;
 import com.fral.extreme.s4.domain.repository.S4SystemDao;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Collection;
+import java.util.Set;
 
 @Service
 public class ClassService {
@@ -19,7 +20,7 @@ public class ClassService {
         return null;
     }
 
-    public Collection<ClassResponseDto> getAll() {
+    public Set<ClassResponseDto> getAll() {
         return null;
     }
 
@@ -35,11 +36,19 @@ public class ClassService {
         return true;
     }
 
-    public Collection<ClassResponseDto> getClassesAssignedToStudent(Long studentId) {
+    public Set<ClassResponseDto> getClassesAssignedToStudent(Long studentId) {
         return null;
     }
 
-    public Collection<ClassResponseDto> findByProperty(String Property) {
+    public Set<ClassResponseDto> findByProperty(String classProperty) {
         return null;
+    }
+
+    public boolean registerNewStudent(Long classId, Student student) {
+        return true;
+    }
+
+    public boolean registerStudents(Long classId, Set<Student> students) {
+        return true;
     }
 }
