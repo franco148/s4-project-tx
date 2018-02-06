@@ -1,7 +1,7 @@
 package com.fral.extreme.s4.services;
 
-import com.fral.extreme.s4.common.dto.StudentRequestDto;
-import com.fral.extreme.s4.common.dto.StudentResponseDto;
+import com.fral.extreme.s4.common.dto.request.StudentRequestDto;
+import com.fral.extreme.s4.common.dto.response.StudentResponseDto;
 import com.fral.extreme.s4.config.SpringTestContext;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;

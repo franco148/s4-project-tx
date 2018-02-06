@@ -1,4 +1,4 @@
-package com.fral.extreme.s4.common.dto;
+package com.fral.extreme.s4.common.dto.request;
 
 public class ClassRequestDto {
 

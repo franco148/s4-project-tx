@@ -1,6 +1,6 @@
 package com.fral.extreme.s4.services;
 
-import com.fral.extreme.s4.common.dto.ClassResponseDto;
+import com.fral.extreme.s4.common.dto.response.ClassResponseDto;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
 import com.fral.extreme.s4.domain.repository.S4SystemDao;

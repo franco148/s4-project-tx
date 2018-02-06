@@ -1,13 +1,10 @@
-package com.fral.extreme.s4.common.dto;
+package com.fral.extreme.s4.common.dto.request;
 
-import java.util.Collection;
-
-public class StudentResponseDto {
+public class StudentUpdateRequestDto {
 
     private Long id;
     private String firstName;
     private String lastName;
-    private Collection<Class> classes;
 
     public Long getId() {
         return id;
@@ -31,13 +28,5 @@ public class StudentResponseDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public Collection<Class> getClasses() {
-        return classes;
-    }
-
-    public void setClasses(Collection<Class> classes) {
-        this.classes = classes;
     }
 }

@@ -1,17 +1,11 @@
-package com.fral.extreme.s4.common.dto;
+package com.fral.extreme.s4.common.dto.response;
 
-import com.fral.extreme.s4.domain.model.Student;
-
-import java.util.Collection;
-import java.util.HashSet;
-
-public class ClassResponseDto {
+public class ClassShortInfoDto {
 
     private Long id;
     private String code;
     private String title;
     private String description;
-    private Collection<Student> registeredStudents;
 
     public Long getId() {
         return id;
@@ -45,12 +39,4 @@ public class ClassResponseDto {
         this.description = description;
     }
 
-    public Collection<Student> getRegisteredStudents() {
-        return registeredStudents;
-    }
-
-    public void setRegisteredStudents(Collection<Student> registeredStudents) {
-        this.registeredStudents = new HashSet<>();
-        this.registeredStudents.addAll(registeredStudents);
-    }
 }
