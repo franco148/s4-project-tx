@@ -35,7 +35,7 @@ public class StudentRequestDto extends DtoBase {
             this.firstName = sourceEntity.getFirstName();
             this.lastName = sourceEntity.getLastName();
         } else {
-            throw new IncompatibleEntityTypeException();
+            throw new IncompatibleEntityTypeException("Set entity to DTO", entity.getClass().getTypeName(), Student.class.getTypeName());
         }
     }
 }

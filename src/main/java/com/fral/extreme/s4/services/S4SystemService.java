@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class S4SystemService<TReturn, TParameter> {
+public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEntity> {
 
     private S4SystemDao systemDao;
 
@@ -24,169 +24,161 @@ public class S4SystemService<TReturn, TParameter> {
         this.systemDao = systemDao;
     }
 
-    public <R extends DtoBase, T extends BaseEntity> R find(Class<R> entityResponse, Class<T> entityParameter, Serializable entityId) throws EntityNotFoundException {
-        BaseEntity retrievedEntity = systemDao.load(entityParameter, entityId);
+    public TReturn find(Class<TReturn> responseType, Class<TParameter> parameterType, Serializable entityId) {
+        BaseEntity retrievedEntity = systemDao.load(parameterType, entityId);
 
         if (retrievedEntity == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(entityId, parameterType.getName());
         }
 
-        R response = null;
+        TReturn response;
         try {
-            response = entityResponse.newInstance();
-            try {
-                response.set(retrievedEntity);
-            } catch (IncompatibleEntityTypeException e) {
-                e.printStackTrace();
-            }
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            response = responseType.newInstance();
+            response.set(retrievedEntity);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IncompatibleEntityTypeException("Initializing return type",
+                                                      responseType.getTypeName(),
+                                                      responseType.getTypeName());
         }
 
         return response;
     }
 
-    public <R extends DtoBase, T extends BaseEntity> Set<R> getAll(Class<R> entityResponse, Class<T> entityParameter) {
-        Set<R> resultCollection = new HashSet<>();
+    public Set<TReturn> getAll(Class<TReturn> responseType, Class<TParameter> parameterType) {
+        Set<TReturn> resultCollection = new HashSet<>();
 
-        Collection<T> retrievedEntities = systemDao.find(entityParameter);
+        Collection<TParameter> retrievedEntities = systemDao.find(parameterType);
 
-        for (T entity : retrievedEntities) {
-            try {
-                R dto = entityResponse.newInstance();
-                try {
-                    dto.set(entity);
-                } catch (IncompatibleEntityTypeException e) {
-                    e.printStackTrace();
-                }
+        try {
+            for (TParameter entity : retrievedEntities) {
+                TReturn dto = responseType.newInstance();
+                dto.set(entity);
 
                 resultCollection.add(dto);
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
             }
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IncompatibleEntityTypeException("Initializing return type",
+                    responseType.getTypeName(),
+                    responseType.getTypeName());
         }
 
         return resultCollection;
     }
 
-    public <R extends DtoBase, T extends BaseEntity> R save(Class<R> entityResponse, T entityToSave) {
+    public TReturn save(Class<TReturn> responseType, TParameter entityToSave) {
 
-        T saved = systemDao.persist(entityToSave);
+        TParameter saved = systemDao.persist(entityToSave);
 
-        R response = null;
+        TReturn response;
+
         try {
-            response = entityResponse.newInstance();
-            try {
-                response.set(saved);
-            } catch (IncompatibleEntityTypeException e) {
-                e.printStackTrace();
-            }
+
+            response = responseType.newInstance();
+            response.set(saved);
+
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new IncompatibleEntityTypeException("Initializing return type",
+                    responseType.getTypeName(),
+                    responseType.getTypeName());
         }
+
         return response;
     }
 
-    public <R extends DtoBase, T extends BaseEntity> R update(Class<R> entityResponse, Class<T> entityParameter, T entityToUpdate) throws EntityNotFoundException, IncompatibleEntityTypeException {
-        T retrievedEntity = systemDao.load(entityParameter, entityToUpdate.getId());
+    public TReturn update(Class<TReturn> responseType, Class<TParameter> parameterType, TParameter entityToUpdate) {
+        TParameter retrievedEntity = systemDao.load(parameterType, entityToUpdate.getId());
 
         if (retrievedEntity == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(entityToUpdate.getId(), entityToUpdate.getClass().getName());
         }
 
         retrievedEntity.copy(entityToUpdate);
 
         try {
-            R response = entityResponse.newInstance();
-            T updatedEntity = systemDao.persist(retrievedEntity);
+            TReturn response = responseType.newInstance();
+            TParameter updatedEntity = systemDao.persist(retrievedEntity);
 
             response.set(updatedEntity);
 
             return response;
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IncompatibleEntityTypeException("Initializing return type",
+                    responseType.getTypeName(),
+                    responseType.getTypeName());
         }
-
-        return null;
     }
 
-    public <T extends BaseEntity> boolean delete(Class<T> entityType, Serializable entityId) throws EntityNotFoundException {
+    public boolean delete(Class<TParameter> parameterType, Serializable entityId) {
 
-        T entityToDelete = systemDao.load(entityType, entityId);
+        TParameter entityToDelete = systemDao.load(parameterType, entityId);
 
         if (entityToDelete == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(entityId, parameterType.getName());
         }
 
         return systemDao.delete(entityToDelete);
     }
 
-    public <R extends DtoBase, T extends BaseEntity> Set<R> getCollectionOfRelatedEntity(Class<R> entityResponse, Class<T> entityParameter, Serializable entityId) throws EntityNotFoundException {
-        T relatedEntity = systemDao.load(entityParameter, entityId);
+    public Set<TReturn> getCollectionOfRelatedEntity(Class<TReturn> responseType, Class<TParameter> parameterType, Serializable entityId) {
+        TParameter relatedEntity = systemDao.load(parameterType, entityId);
         
         if (relatedEntity != null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(entityId, parameterType.getName());
         }
         
-        Set<R> relatedEntitiesResponseList = new HashSet<>();
-        Collection<T> relatedEntitiesResult = relatedEntity.getRelatedEntities(entityParameter);
+        Set<TReturn> relatedEntitiesResponseList = new HashSet<>();
+        Collection<TParameter> relatedEntitiesResult = relatedEntity.getRelatedEntities(parameterType);
         try {
             if (relatedEntitiesResult != null) {
-                for (T entity : relatedEntitiesResult) {
-                    R dto = entityResponse.newInstance();
-                    try {
-                        dto.set(entity);
-                    } catch (IncompatibleEntityTypeException e) {
-                        e.printStackTrace();
-                    }
+                for (TParameter entity : relatedEntitiesResult) {
+                    TReturn dto = responseType.newInstance();
+                    dto.set(entity);
 
                     relatedEntitiesResponseList.add(dto);
                 }
             }
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new IncompatibleEntityTypeException("Initializing return type",
+                    responseType.getTypeName(),
+                    responseType.getTypeName());
         }
         
         return relatedEntitiesResponseList;
     }
 
-    public <T extends BaseEntity, RE extends BaseEntity> boolean addRelatedEntity(Class<T> entityType, Class<RE> relatedEntityType, Serializable entityId, RE relatedEntity) throws EntityNotFoundException, PersistenceException, IncompatibleEntityTypeException {
-        T retrievedEntity = systemDao.load(entityType, entityId);
+    public boolean addRelatedEntity(Class<TParameter> parameterType, Serializable entityId, TParameter relatedEntity) {
+        TParameter retrievedEntity = systemDao.load(parameterType, entityId);
 
         if (retrievedEntity == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(entityId, relatedEntity.getClass().getName());
         }
 
         retrievedEntity.addRelatedEntity(relatedEntity);
 
         try {
-            T savedEntity = systemDao.persist(retrievedEntity);
+            TParameter savedEntity = systemDao.persist(retrievedEntity);
             return savedEntity != null;
         } catch (Exception ex) {
-            throw new PersistenceException();
+            throw new PersistenceException(parameterType.getTypeName());
         }
     }
 
-    public <T extends BaseEntity, RE extends BaseEntity> boolean addRelatedEntities(Class<T> entityType, Class<RE> relatedEntityType, Serializable entityId, Set<RE> relatedEntities) throws EntityNotFoundException, PersistenceException, IncompatibleEntityTypeException {
-        T retrievedEntity = systemDao.load(entityType, entityId);
+    public boolean addRelatedEntities(Class<TParameter> parameterType, Serializable entityId, Set<TParameter> relatedEntities) {
+        TParameter retrievedEntity = systemDao.load(parameterType, entityId);
 
         if (retrievedEntity == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(entityId, parameterType.getName());
         }
 
-        for (RE entity : relatedEntities) {
+        for (TParameter entity : relatedEntities) {
             retrievedEntity.addRelatedEntity(entity);
         }
 
         try {
-            T savedEntity = systemDao.persist(retrievedEntity);
+            TParameter savedEntity = systemDao.persist(retrievedEntity);
             return savedEntity != null;
         } catch (Exception ex) {
-            throw new PersistenceException();
+            throw new PersistenceException(parameterType.getTypeName());
         }
     }
 

@@ -46,7 +46,7 @@ public class ClassRequestDto extends DtoBase {
             this.description = sourceEntity.getDescription();
 
         } else {
-            throw new IncompatibleEntityTypeException();
+            throw new IncompatibleEntityTypeException("Set entity to DTO", entity.getClass().getTypeName(), Class.class.getTypeName());
         }
     }
 }

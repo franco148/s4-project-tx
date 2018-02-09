@@ -104,7 +104,9 @@ public class Student extends BaseEntity {
             }
 
         } else {
-            throw new IncompatibleEntityTypeException();
+            throw new IncompatibleEntityTypeException("Copy an entity to Student Model",
+                                                       entity.getClass().getTypeName(),
+                                                       Student.class.getTypeName());
         }
     }
 
@@ -113,7 +115,9 @@ public class Student extends BaseEntity {
         if (relatedEntity instanceof Class) {
             setClass(Class.class.cast(relatedEntity));
         } else {
-            throw new IncompatibleEntityTypeException();
+            throw new IncompatibleEntityTypeException("Add related entity to Student Model",
+                                                       relatedEntity.getClass().getTypeName(),
+                                                       Class.class.getTypeName());
         }
     }
 

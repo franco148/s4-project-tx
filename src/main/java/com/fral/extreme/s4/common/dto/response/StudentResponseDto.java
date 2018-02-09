@@ -77,7 +77,7 @@ public class StudentResponseDto extends DtoBase {
                 }
             }
         } else {
-            throw new IncompatibleEntityTypeException();
+            throw new IncompatibleEntityTypeException("Set entity to DTO", entity.getClass().getTypeName(), Student.class.getTypeName());
         }
     }
     //endregion
