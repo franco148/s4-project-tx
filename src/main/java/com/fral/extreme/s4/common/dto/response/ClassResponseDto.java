@@ -1,31 +1,24 @@
 package com.fral.extreme.s4.common.dto.response;
 
+import com.fral.extreme.s4.common.dto.DtoBase;
+import com.fral.extreme.s4.common.dto.request.StudentRequestDto;
+import com.fral.extreme.s4.domain.model.BaseEntity;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-public class ClassResponseDto {
+public class ClassResponseDto extends DtoBase {
 
-    private Long id;
+    //region Properties
     private String code;
     private String title;
     private String description;
-    private Collection<StudentShortInfoDto> registeredStudents;
+    private Collection<StudentRequestDto> registeredStudents;
+    //endregion
 
-    public ClassResponseDto(Class classModel) {
-        this.initializeFromModel(classModel);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    //region Getters & Setters
     public String getCode() {
         return code;
     }
@@ -50,34 +43,40 @@ public class ClassResponseDto {
         this.description = description;
     }
 
-    public Collection<StudentShortInfoDto> getRegisteredStudents() {
+    public Collection<StudentRequestDto> getRegisteredStudents() {
         return registeredStudents;
     }
 
-    public void setRegisteredStudents(Collection<StudentShortInfoDto> registeredStudents) {
+    public void setRegisteredStudents(Collection<StudentRequestDto> registeredStudents) {
         if (this.registeredStudents == null)
             this.registeredStudents = new HashSet<>();
 
         this.registeredStudents.addAll(registeredStudents);
     }
 
-    public void addNewStudent(StudentShortInfoDto student) {
+    public void addNewStudent(StudentRequestDto student) {
         if (this.registeredStudents == null)
             this.registeredStudents = new HashSet<>();
 
         this.registeredStudents.add(student);
     }
+    //endregion
 
-    public void initializeFromModel(Class classModel) {
-        if (classModel != null) {
-            this.id = classModel.getId();
-            this.code = classModel.getCode();
-            this.title = classModel.getTitle();
-            this.description = classModel.getDescription();
+    //region Overrides
+    @Override
+    public <T extends BaseEntity> void set(T entity) {
 
-            if (classModel.getStudents() != null) {
-                for (Student student : classModel.getStudents()) {
-                    StudentShortInfoDto studentDto = new StudentShortInfoDto();
+        if (entity instanceof Class) {
+            Class classInfo = Class.class.cast(entity);
+
+            this.id = classInfo.getId();
+            this.code = classInfo.getCode();
+            this.title = classInfo.getTitle();
+            this.description = classInfo.getDescription();
+
+            if (classInfo.getStudents() != null) {
+                for (Student student : classInfo.getStudents()) {
+                    StudentRequestDto studentDto = new StudentRequestDto();
                     studentDto.setId(student.getId());
                     studentDto.setFirstName(student.getFirstName());
                     studentDto.setLastName(student.getLastName());
@@ -87,4 +86,6 @@ public class ClassResponseDto {
             }
         }
     }
+    //endregion
+
 }

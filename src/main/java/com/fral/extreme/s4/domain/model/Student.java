@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
-public class Student {
+//@Entity
+public class Student extends BaseEntity {
 
-    @Id
-    @GeneratedValue
-    private Long id;
-
+    //region Properties
     private String lastName;
 
     private String firstName;
@@ -24,15 +21,10 @@ public class Student {
             inverseJoinColumns = { @JoinColumn(name = "class_id") }
     )
     private List<Class> classes;
+    //endregion
 
-
-
+    //region Constructor
     public Student() {
-    }
-
-    public Student(String lastName, String firstName) {
-        this.lastName = lastName;
-        this.firstName = firstName;
     }
 
     public Student(Long id, String lastName, String firstName) {
@@ -40,15 +32,9 @@ public class Student {
         this.lastName = lastName;
         this.firstName = firstName;
     }
+    //endregion
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    //region Getters & Setters
     public String getLastName() {
         return lastName;
     }
@@ -77,7 +63,9 @@ public class Student {
     public void setClass(Class newClass) {
         this.classes.add(newClass);
     }
+    //endregion
 
+    //region Overrides
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -93,4 +81,5 @@ public class Student {
 
         return Objects.hash(id, lastName, firstName, classes);
     }
+    //endregion
 }

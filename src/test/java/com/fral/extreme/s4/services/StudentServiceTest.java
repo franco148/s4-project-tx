@@ -43,72 +43,72 @@ public class StudentServiceTest {
     public void tearDown() throws Exception {
     }
 
-    @Test
-    public void testFind_ReturnedValueShouldBe_DtoClass() throws EntityNotFoundException {
-
-        StudentResponseDto actualResult = studentService.find(1L);
-        Long expectedId = 1L;
-
-        assertNotNull(actualResult);
-        assertEquals(expectedId, actualResult.getId());
-    }
-
-    @Test
-    public void testFind_DaoLoadMethod_WithCorrectParameters() throws EntityNotFoundException {
-
-        //Verifying that the persistence layer calls LOAD method
-        studentService.find(1L);
-        verify(systemDao).load(Student.class, 1L);
-    }
-
-    @Test
-    public void testFind_DaoLoadMethod_ExecutedOnce() throws EntityNotFoundException {
-
-        studentService.find(1L);
-        verify(systemDao, Mockito.times(1)).load(Student.class, 1L);
-    }
-
-    @Test
-    public void testFind_DaoLoadMethod_WithWrongParameters() throws EntityNotFoundException {
-
-        studentService.find(1L);
-        verify(systemDao, Mockito.never()).load(Student.class, 10L);
-        verify(systemDao, Mockito.times(0)).load(Student.class, 10L);
-    }
-
-    @Test
-    public void testFind_DaoLoadMethod_NonExecutedMoreThanOnce() throws EntityNotFoundException {
-
-        studentService.find(1L);
-        verify(systemDao, Mockito.atMost(1)).load(Student.class, 1L);
-    }
-
-    @Test
-    public void testGetAll_DaoFindMethod_WithCorrectParameter() {
-        studentService.getAll();
-        verify(systemDao).find(Student.class);
-    }
-
-    @Test
-    public void testGetAll_DaoFindMethod_WithWrongParameter() {
-        studentService.getAll();
-        verify(systemDao, Mockito.never()).find(Class.class);
-    }
-
-    @Test
-    public void testGetAll_DaoFindMethod_ExecutedOnce() {
-        studentService.getAll();
-        verify(systemDao, Mockito.times(1)).find(Student.class);
-    }
-
-    @Test
-    public void testSave_DaoPersistMethod_WithCorrectParameters() {
-        //TODO: Complete unit tests
-    }
-
-    @Test
-    public void testSave_DaoPersistMethod_ExecutedOnce() {
-        //TODO: Complete unit tests
-    }
+//    @Test
+//    public void testFind_ReturnedValueShouldBe_DtoClass() throws EntityNotFoundException {
+//
+//        StudentResponseDto actualResult = studentService.find(1L);
+//        Long expectedId = 1L;
+//
+//        assertNotNull(actualResult);
+//        assertEquals(expectedId, actualResult.getId());
+//    }
+//
+//    @Test
+//    public void testFind_DaoLoadMethod_WithCorrectParameters() throws EntityNotFoundException {
+//
+//        //Verifying that the persistence layer calls LOAD method
+//        studentService.find(1L);
+//        verify(systemDao).load(Student.class, 1L);
+//    }
+//
+//    @Test
+//    public void testFind_DaoLoadMethod_ExecutedOnce() throws EntityNotFoundException {
+//
+//        studentService.find(1L);
+//        verify(systemDao, Mockito.times(1)).load(Student.class, 1L);
+//    }
+//
+//    @Test
+//    public void testFind_DaoLoadMethod_WithWrongParameters() throws EntityNotFoundException {
+//
+//        studentService.find(1L);
+//        verify(systemDao, Mockito.never()).load(Student.class, 10L);
+//        verify(systemDao, Mockito.times(0)).load(Student.class, 10L);
+//    }
+//
+//    @Test
+//    public void testFind_DaoLoadMethod_NonExecutedMoreThanOnce() throws EntityNotFoundException {
+//
+//        studentService.find(1L);
+//        verify(systemDao, Mockito.atMost(1)).load(Student.class, 1L);
+//    }
+//
+//    @Test
+//    public void testGetAll_DaoFindMethod_WithCorrectParameter() {
+//        studentService.getAll();
+//        verify(systemDao).find(Student.class);
+//    }
+//
+//    @Test
+//    public void testGetAll_DaoFindMethod_WithWrongParameter() {
+//        studentService.getAll();
+//        verify(systemDao, Mockito.never()).find(Class.class);
+//    }
+//
+//    @Test
+//    public void testGetAll_DaoFindMethod_ExecutedOnce() {
+//        studentService.getAll();
+//        verify(systemDao, Mockito.times(1)).find(Student.class);
+//    }
+//
+//    @Test
+//    public void testSave_DaoPersistMethod_WithCorrectParameters() {
+//        //TODO: Complete unit tests
+//    }
+//
+//    @Test
+//    public void testSave_DaoPersistMethod_ExecutedOnce() {
+//        //TODO: Complete unit tests
+//    }
 
 }

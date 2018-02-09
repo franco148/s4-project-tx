@@ -5,12 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
-public class Class {
+//@Entity
+public class Class extends BaseEntity {
 
-    @Id
-    @GeneratedValue
-    private Long id;
+    //region Properties
     private String code;
     private String title;
     private String description;
@@ -18,14 +16,10 @@ public class Class {
     @Column
     @ManyToMany(mappedBy = "classes")
     private List<Student> students;
+    //endregion
 
+    //region Constructors
     public Class() {
-    }
-
-    public Class(String code, String title, String description) {
-        this.code = code;
-        this.title = title;
-        this.description = description;
     }
 
     public Class(Long id, String code, String title, String description) {
@@ -34,15 +28,9 @@ public class Class {
         this.title = title;
         this.description = description;
     }
+    //endregion
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    //region Getters & Setters
     public String getCode() {
         return code;
     }
@@ -79,7 +67,9 @@ public class Class {
     public void setStudent(Student student) {
         this.students.add(student);
     }
+    //endregion
 
+    //region Overrides
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -96,4 +86,5 @@ public class Class {
 
         return Objects.hash(id, code, title, description, students);
     }
+    //endregion
 }

@@ -1,6 +1,8 @@
 package com.fral.extreme.s4.common.dto.request;
 
-public class StudentRequestDto {
+import com.fral.extreme.s4.common.dto.DtoBase;
+
+public class StudentRequestDto extends DtoBase {
 
     private String firstName;
     private String lastName;
