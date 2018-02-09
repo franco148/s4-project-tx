@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEntity> {
+public class S4SystemService<TReturn extends DtoBase, TParameter1 extends BaseEntity, TParameter2 extends BaseEntity> {
 
     private S4SystemDao systemDao;
 
@@ -24,7 +24,7 @@ public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEnt
         this.systemDao = systemDao;
     }
 
-    public TReturn find(Class<TReturn> responseType, Class<TParameter> parameterType, Serializable entityId) {
+    public TReturn find(Class<TReturn> responseType, Class<TParameter1> parameterType, Serializable entityId) {
         BaseEntity retrievedEntity = systemDao.load(parameterType, entityId);
 
         if (retrievedEntity == null) {
@@ -44,13 +44,13 @@ public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEnt
         return response;
     }
 
-    public Set<TReturn> getAll(Class<TReturn> responseType, Class<TParameter> parameterType) {
+    public Set<TReturn> getAll(Class<TReturn> responseType, Class<TParameter1> parameterType) {
         Set<TReturn> resultCollection = new HashSet<>();
 
-        Collection<TParameter> retrievedEntities = systemDao.find(parameterType);
+        Collection<TParameter1> retrievedEntities = systemDao.find(parameterType);
 
         try {
-            for (TParameter entity : retrievedEntities) {
+            for (TParameter1 entity : retrievedEntities) {
                 TReturn dto = responseType.newInstance();
                 dto.set(entity);
 
@@ -65,9 +65,9 @@ public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEnt
         return resultCollection;
     }
 
-    public TReturn save(Class<TReturn> responseType, TParameter entityToSave) {
+    public TReturn save(Class<TReturn> responseType, TParameter1 entityToSave) {
 
-        TParameter saved = systemDao.persist(entityToSave);
+        TParameter1 saved = systemDao.persist(entityToSave);
 
         TReturn response;
 
@@ -85,8 +85,8 @@ public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEnt
         return response;
     }
 
-    public TReturn update(Class<TReturn> responseType, Class<TParameter> parameterType, TParameter entityToUpdate) {
-        TParameter retrievedEntity = systemDao.load(parameterType, entityToUpdate.getId());
+    public TReturn update(Class<TReturn> responseType, Class<TParameter1> parameterType, TParameter1 entityToUpdate) {
+        TParameter1 retrievedEntity = systemDao.load(parameterType, entityToUpdate.getId());
 
         if (retrievedEntity == null) {
             throw new EntityNotFoundException(entityToUpdate.getId(), entityToUpdate.getClass().getName());
@@ -96,7 +96,7 @@ public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEnt
 
         try {
             TReturn response = responseType.newInstance();
-            TParameter updatedEntity = systemDao.persist(retrievedEntity);
+            TParameter1 updatedEntity = systemDao.persist(retrievedEntity);
 
             response.set(updatedEntity);
 
@@ -108,9 +108,9 @@ public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEnt
         }
     }
 
-    public boolean delete(Class<TParameter> parameterType, Serializable entityId) {
+    public boolean delete(Class<TParameter1> parameterType, Serializable entityId) {
 
-        TParameter entityToDelete = systemDao.load(parameterType, entityId);
+        TParameter1 entityToDelete = systemDao.load(parameterType, entityId);
 
         if (entityToDelete == null) {
             throw new EntityNotFoundException(entityId, parameterType.getName());
@@ -119,18 +119,18 @@ public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEnt
         return systemDao.delete(entityToDelete);
     }
 
-    public Set<TReturn> getCollectionOfRelatedEntity(Class<TReturn> responseType, Class<TParameter> parameterType, Serializable entityId) {
-        TParameter relatedEntity = systemDao.load(parameterType, entityId);
+    public Set<TReturn> getCollectionOfRelatedEntity(Class<TReturn> responseType, Class<TParameter1> parameterType, Serializable entityId) {
+        TParameter1 relatedEntity = systemDao.load(parameterType, entityId);
         
         if (relatedEntity != null) {
             throw new EntityNotFoundException(entityId, parameterType.getName());
         }
         
         Set<TReturn> relatedEntitiesResponseList = new HashSet<>();
-        Collection<TParameter> relatedEntitiesResult = relatedEntity.getRelatedEntities(parameterType);
+        Collection<TParameter1> relatedEntitiesResult = relatedEntity.getRelatedEntities(parameterType);
         try {
             if (relatedEntitiesResult != null) {
-                for (TParameter entity : relatedEntitiesResult) {
+                for (TParameter1 entity : relatedEntitiesResult) {
                     TReturn dto = responseType.newInstance();
                     dto.set(entity);
 
@@ -146,8 +146,8 @@ public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEnt
         return relatedEntitiesResponseList;
     }
 
-    public boolean addRelatedEntity(Class<TParameter> parameterType, Serializable entityId, TParameter relatedEntity) {
-        TParameter retrievedEntity = systemDao.load(parameterType, entityId);
+    public boolean addRelatedEntity(Class<TParameter1> parameterType, Serializable entityId, TParameter2 relatedEntity) {
+        TParameter1 retrievedEntity = systemDao.load(parameterType, entityId);
 
         if (retrievedEntity == null) {
             throw new EntityNotFoundException(entityId, relatedEntity.getClass().getName());
@@ -156,26 +156,26 @@ public class S4SystemService<TReturn extends DtoBase, TParameter extends BaseEnt
         retrievedEntity.addRelatedEntity(relatedEntity);
 
         try {
-            TParameter savedEntity = systemDao.persist(retrievedEntity);
+            TParameter1 savedEntity = systemDao.persist(retrievedEntity);
             return savedEntity != null;
         } catch (Exception ex) {
             throw new PersistenceException(parameterType.getTypeName());
         }
     }
 
-    public boolean addRelatedEntities(Class<TParameter> parameterType, Serializable entityId, Set<TParameter> relatedEntities) {
-        TParameter retrievedEntity = systemDao.load(parameterType, entityId);
+    public boolean addRelatedEntities(Class<TParameter1> parameterType, Serializable entityId, Set<TParameter2> relatedEntities) {
+        TParameter1 retrievedEntity = systemDao.load(parameterType, entityId);
 
         if (retrievedEntity == null) {
             throw new EntityNotFoundException(entityId, parameterType.getName());
         }
 
-        for (TParameter entity : relatedEntities) {
+        for (TParameter2 entity : relatedEntities) {
             retrievedEntity.addRelatedEntity(entity);
         }
 
         try {
-            TParameter savedEntity = systemDao.persist(retrievedEntity);
+            TParameter1 savedEntity = systemDao.persist(retrievedEntity);
             return savedEntity != null;
         } catch (Exception ex) {
             throw new PersistenceException(parameterType.getTypeName());
