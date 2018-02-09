@@ -1,7 +1,10 @@
 package com.fral.extreme.s4.domain.model;
 
+import com.fral.extreme.s4.exception.IncompatibleEntityTypeException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -80,6 +83,47 @@ public class Student extends BaseEntity {
     public int hashCode() {
 
         return Objects.hash(id, lastName, firstName, classes);
+    }
+
+    @Override
+    public <T extends BaseEntity> void copy(T entity) throws IncompatibleEntityTypeException {
+        if (entity instanceof Student) {
+            Student sourceEntity = Student.class.cast(entity);
+
+            this.id = sourceEntity.getId();
+            this.firstName = sourceEntity.getFirstName();
+            this.lastName = sourceEntity.getLastName();
+
+            if (sourceEntity.getClasses() != null) {
+                for (Class classEntity : sourceEntity.getClasses()) {
+                    Class copied = new Class();
+                    copied.copy(classEntity);
+
+                    this.setClass(copied);
+                }
+            }
+
+        } else {
+            throw new IncompatibleEntityTypeException();
+        }
+    }
+
+    @Override
+    public <T extends BaseEntity> void addRelatedEntity(T relatedEntity) throws IncompatibleEntityTypeException {
+        if (relatedEntity instanceof Class) {
+            setClass(Class.class.cast(relatedEntity));
+        } else {
+            throw new IncompatibleEntityTypeException();
+        }
+    }
+
+    @Override
+    public <T extends BaseEntity> Collection<T> getRelatedEntities(java.lang.Class<T> type) {
+        if (type.equals(Class.class)) {
+            return (Collection<T>) getClasses();
+        }
+
+        return null;
     }
     //endregion
 }

@@ -1,8 +1,9 @@
 package com.fral.extreme.s4.common.dto;
 
 import com.fral.extreme.s4.domain.model.BaseEntity;
+import com.fral.extreme.s4.exception.IncompatibleEntityTypeException;
 
-public class DtoBase {
+public abstract class DtoBase {
 
     //region Properties
     protected Long id;
@@ -29,8 +30,6 @@ public class DtoBase {
     //endregion
 
     //region Methods
-    public <T extends BaseEntity> void set(T entity) {
-
-    }
+    public abstract  <T extends BaseEntity> void set(T entity) throws IncompatibleEntityTypeException;
     //endregion
 }

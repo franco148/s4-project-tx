@@ -4,6 +4,8 @@ import com.fral.extreme.s4.common.dto.DtoBase;
 import com.fral.extreme.s4.domain.model.BaseEntity;
 import com.fral.extreme.s4.domain.repository.S4SystemDao;
 import com.fral.extreme.s4.exception.EntityNotFoundException;
+import com.fral.extreme.s4.exception.IncompatibleEntityTypeException;
+import com.fral.extreme.s4.exception.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class S4SystemService {
+public class S4SystemService<TReturn, TParameter> {
 
     private S4SystemDao systemDao;
 
@@ -32,7 +34,11 @@ public class S4SystemService {
         R response = null;
         try {
             response = entityResponse.newInstance();
-            response.set(retrievedEntity);
+            try {
+                response.set(retrievedEntity);
+            } catch (IncompatibleEntityTypeException e) {
+                e.printStackTrace();
+            }
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -50,12 +56,14 @@ public class S4SystemService {
         for (T entity : retrievedEntities) {
             try {
                 R dto = entityResponse.newInstance();
-                dto.set(entity);
+                try {
+                    dto.set(entity);
+                } catch (IncompatibleEntityTypeException e) {
+                    e.printStackTrace();
+                }
 
                 resultCollection.add(dto);
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
@@ -70,13 +78,116 @@ public class S4SystemService {
         R response = null;
         try {
             response = entityResponse.newInstance();
-            response.set(saved);
+            try {
+                response.set(saved);
+            } catch (IncompatibleEntityTypeException e) {
+                e.printStackTrace();
+            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public <R extends DtoBase, T extends BaseEntity> R update(Class<R> entityResponse, Class<T> entityParameter, T entityToUpdate) throws EntityNotFoundException, IncompatibleEntityTypeException {
+        T retrievedEntity = systemDao.load(entityParameter, entityToUpdate.getId());
+
+        if (retrievedEntity == null) {
+            throw new EntityNotFoundException();
+        }
+
+        retrievedEntity.copy(entityToUpdate);
+
+        try {
+            R response = entityResponse.newInstance();
+            T updatedEntity = systemDao.persist(retrievedEntity);
+
+            response.set(updatedEntity);
+
+            return response;
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        return response;
+
+        return null;
+    }
+
+    public <T extends BaseEntity> boolean delete(Class<T> entityType, Serializable entityId) throws EntityNotFoundException {
+
+        T entityToDelete = systemDao.load(entityType, entityId);
+
+        if (entityToDelete == null) {
+            throw new EntityNotFoundException();
+        }
+
+        return systemDao.delete(entityToDelete);
+    }
+
+    public <R extends DtoBase, T extends BaseEntity> Set<R> getCollectionOfRelatedEntity(Class<R> entityResponse, Class<T> entityParameter, Serializable entityId) throws EntityNotFoundException {
+        T relatedEntity = systemDao.load(entityParameter, entityId);
+        
+        if (relatedEntity != null) {
+            throw new EntityNotFoundException();
+        }
+        
+        Set<R> relatedEntitiesResponseList = new HashSet<>();
+        Collection<T> relatedEntitiesResult = relatedEntity.getRelatedEntities(entityParameter);
+        try {
+            if (relatedEntitiesResult != null) {
+                for (T entity : relatedEntitiesResult) {
+                    R dto = entityResponse.newInstance();
+                    try {
+                        dto.set(entity);
+                    } catch (IncompatibleEntityTypeException e) {
+                        e.printStackTrace();
+                    }
+
+                    relatedEntitiesResponseList.add(dto);
+                }
+            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        
+        return relatedEntitiesResponseList;
+    }
+
+    public <T extends BaseEntity, RE extends BaseEntity> boolean addRelatedEntity(Class<T> entityType, Class<RE> relatedEntityType, Serializable entityId, RE relatedEntity) throws EntityNotFoundException, PersistenceException, IncompatibleEntityTypeException {
+        T retrievedEntity = systemDao.load(entityType, entityId);
+
+        if (retrievedEntity == null) {
+            throw new EntityNotFoundException();
+        }
+
+        retrievedEntity.addRelatedEntity(relatedEntity);
+
+        try {
+            T savedEntity = systemDao.persist(retrievedEntity);
+            return savedEntity != null;
+        } catch (Exception ex) {
+            throw new PersistenceException();
+        }
+    }
+
+    public <T extends BaseEntity, RE extends BaseEntity> boolean addRelatedEntities(Class<T> entityType, Class<RE> relatedEntityType, Serializable entityId, Set<RE> relatedEntities) throws EntityNotFoundException, PersistenceException, IncompatibleEntityTypeException {
+        T retrievedEntity = systemDao.load(entityType, entityId);
+
+        if (retrievedEntity == null) {
+            throw new EntityNotFoundException();
+        }
+
+        for (RE entity : relatedEntities) {
+            retrievedEntity.addRelatedEntity(entity);
+        }
+
+        try {
+            T savedEntity = systemDao.persist(retrievedEntity);
+            return savedEntity != null;
+        } catch (Exception ex) {
+            throw new PersistenceException();
+        }
     }
 
 }

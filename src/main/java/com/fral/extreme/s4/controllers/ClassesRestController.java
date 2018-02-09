@@ -35,7 +35,8 @@ public class ClassesRestController {
     )
     public ResponseEntity<ClassResponseDto> find(@PathVariable("classId") Long classId) throws EntityNotFoundException {
         //return ResponseEntity.ok(studentService.find(classId));
-        return ResponseEntity.ok(systemService.find(ClassResponseDto.class, Class.class, classId));
+        //return ResponseEntity.ok(systemService.find(ClassResponseDto.class, Class.class, classId));
+        return null;
     }
 
 //    @RequestMapping(

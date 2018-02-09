@@ -5,6 +5,7 @@ import com.fral.extreme.s4.common.dto.request.ClassRequestDto;
 import com.fral.extreme.s4.domain.model.BaseEntity;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
+import com.fral.extreme.s4.exception.IncompatibleEntityTypeException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -55,7 +56,7 @@ public class StudentResponseDto extends DtoBase {
 
     //region Overrides
     @Override
-    public <T extends BaseEntity> void set(T entity) {
+    public <T extends BaseEntity> void set(T entity) throws IncompatibleEntityTypeException {
 
         if (entity instanceof Student) {
             Student studentInfo = Student.class.cast(entity);
@@ -75,6 +76,8 @@ public class StudentResponseDto extends DtoBase {
                     this.addNewClass(classDto);
                 }
             }
+        } else {
+            throw new IncompatibleEntityTypeException();
         }
     }
     //endregion
