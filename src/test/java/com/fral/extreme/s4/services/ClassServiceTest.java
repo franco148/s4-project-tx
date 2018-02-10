@@ -5,7 +5,6 @@ import com.fral.extreme.s4.config.SpringTestContext;
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
 import com.fral.extreme.s4.domain.repository.S4SystemDao;
-import com.fral.extreme.s4.exception.EntityNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,81 +23,96 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration(classes = SpringTestContext.class)
 public class ClassServiceTest {
 
+    //region PrivateProperties
+    private final Long CLASS_ID = 1L;
+    private final String CLASS_CODE = "SC";
+    private final String CLASS_TITLE = "ST";
+    private final String CLASS_DESCRIPTION = "SD";
+    private final Long NON_EXISTING_CLASS_ID = 10L;
+
+    private final Long EXPECTED_CLASS_ID = 1L;
+    private final int EXPECTED_NUMBER_OF_INVOCATIONS = 1;
+    private final int UNEXPECTED_NUMBER_OF_INVOCATIONS = 0;
+
+    //endregion
+
+    //region Properties Under Test
     @Mock
     private S4SystemDao systemDao;
 
     @Autowired
     @InjectMocks
-    private ClassService classService;
+    private S4SystemService<ClassResponseDto, Class, Student> classService;
+    //endregion
 
+    //region Test Setup
     @Before
-    public void setUp() throws Exception {
-        Class toBeReturnedFromDao = new Class(1L, "SC", "ST", "SD");
-        when(systemDao.load(Class.class, 1L)).thenReturn(toBeReturnedFromDao);
+    public void setUp() {
+        Class toBeReturnedFromDao = new Class(CLASS_ID, CLASS_CODE, CLASS_TITLE, CLASS_DESCRIPTION);
+        when(systemDao.load(Class.class, CLASS_ID)).thenReturn(toBeReturnedFromDao);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
+    }
+    //endregion
+
+    //region UnitTests for S4SystemService
+    @Test
+    public void testFind_ReturnedValueShouldBe_DtoClass() {
+
+        ClassResponseDto actualResult = classService.find(ClassResponseDto.class, Class.class, CLASS_ID);
+
+        assertNotNull(actualResult);
+        assertEquals(EXPECTED_CLASS_ID, actualResult.getId());
     }
 
-//    @Test
-//    public void testFind_ReturnedValueShouldBe_DtoClass() throws EntityNotFoundException {
-//        Class toBeReturnedFromDao = new Class("XXXX", "Spring Framework", "Spring Framework Master Class");
-//        toBeReturnedFromDao.setId(1L);
-//
-//        when(systemDao.load(Class.class, 1L)).thenReturn(toBeReturnedFromDao);
-//
-//        ClassResponseDto actualResult = classService.find(1L);
-//        Long expectedId = 1L;
-//
-//        assertNotNull(actualResult);
-//        assertEquals(expectedId, actualResult.getId());
-//    }
-//
-//    @Test
-//    public void testFind_DaoLoadMethod_WithCorrectParameters() throws EntityNotFoundException {
-//
-//        classService.find(1L);
-//        verify(systemDao).load(Class.class, 1L);
-//    }
-//
-//    @Test
-//    public void testFind_DaoLoadMethod_ExecutedOnce() throws EntityNotFoundException {
-//
-//        classService.find(1L);
-//        verify(systemDao, Mockito.times(1)).load(Class.class, 1L);
-//    }
-//
-//    @Test
-//    public void testFind_DaoLoadMethod_WithWrongParameters() throws EntityNotFoundException {
-//
-//        classService.find(1L);
-//        verify(systemDao, Mockito.never()).load(Class.class, 10L);
-//        verify(systemDao, Mockito.times(0)).load(Class.class, 10L);
-//    }
-//
-//    @Test
-//    public void testFind_DaoLoadMethod_NonExecutedMoreThanOnce() throws EntityNotFoundException {
-//
-//        classService.find(1L);
-//        verify(systemDao, Mockito.atMost(1)).load(Class.class, 1L);
-//    }
-//
-//    @Test
-//    public void testGetAll_DaoFindMethod_WithCorrectParameter() {
-//        classService.getAll();
-//        verify(systemDao).find(Class.class);
-//    }
-//
-//    @Test
-//    public void testGetAll_DaoFindMethod_WithWrongParameter() {
-//        classService.getAll();
-//        verify(systemDao, Mockito.never()).find(Student.class);
-//    }
-//
-//    @Test
-//    public void testGetAll_DaoFindMethod_ExecutedOnce() {
-//        classService.getAll();
-//        verify(systemDao, Mockito.times(1)).find(Class.class);
-//    }
+    @Test
+    public void testFind_DaoLoadMethod_WithCorrectParameters() {
+
+        classService.find(ClassResponseDto.class, Class.class, CLASS_ID);
+
+        verify(systemDao).load(Class.class, CLASS_ID);
+    }
+
+    @Test
+    public void testFind_DaoLoadMethod_ExecutedOnce() {
+
+        classService.find(ClassResponseDto.class, Class.class, CLASS_ID);
+        verify(systemDao, Mockito.times(EXPECTED_NUMBER_OF_INVOCATIONS)).load(Class.class, CLASS_ID);
+    }
+
+    @Test
+    public void testFind_DaoLoadMethod_WithWrongParameters() {
+
+        classService.find(ClassResponseDto.class, Class.class, CLASS_ID);
+        verify(systemDao, Mockito.never()).load(Class.class, NON_EXISTING_CLASS_ID);
+        verify(systemDao, Mockito.times(UNEXPECTED_NUMBER_OF_INVOCATIONS)).load(Class.class, NON_EXISTING_CLASS_ID);
+    }
+
+    @Test
+    public void testFind_DaoLoadMethod_NonExecutedMoreThanOnce() {
+
+        classService.find(ClassResponseDto.class, Class.class, CLASS_ID);
+        verify(systemDao, Mockito.atMost(EXPECTED_NUMBER_OF_INVOCATIONS)).load(Class.class, CLASS_ID);
+    }
+
+    @Test
+    public void testGetAll_DaoFindMethod_WithCorrectParameter() {
+        classService.getAll(ClassResponseDto.class, Class.class);
+        verify(systemDao).find(Class.class);
+    }
+
+    @Test
+    public void testGetAll_DaoFindMethod_WithWrongParameter() {
+        classService.getAll(ClassResponseDto.class, Class.class);
+        verify(systemDao, Mockito.never()).find(Student.class);
+    }
+
+    @Test
+    public void testGetAll_DaoFindMethod_ExecutedOnce() {
+        classService.getAll(ClassResponseDto.class, Class.class);
+        verify(systemDao, Mockito.times(EXPECTED_NUMBER_OF_INVOCATIONS)).find(Class.class);
+    }
+    //endregion
 }
