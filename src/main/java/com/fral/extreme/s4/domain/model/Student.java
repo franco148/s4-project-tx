@@ -1,17 +1,17 @@
 package com.fral.extreme.s4.domain.model;
 
+import com.fral.extreme.s4.exception.IncompatibleEntityTypeException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
-public class Student {
+//@Entity
+public class Student extends BaseEntity {
 
-    @Id
-    @GeneratedValue
-    private Long id;
-
+    //region Properties
     private String lastName;
 
     private String firstName;
@@ -24,15 +24,10 @@ public class Student {
             inverseJoinColumns = { @JoinColumn(name = "class_id") }
     )
     private List<Class> classes;
+    //endregion
 
-
-
+    //region Constructor
     public Student() {
-    }
-
-    public Student(String lastName, String firstName) {
-        this.lastName = lastName;
-        this.firstName = firstName;
     }
 
     public Student(Long id, String lastName, String firstName) {
@@ -40,15 +35,9 @@ public class Student {
         this.lastName = lastName;
         this.firstName = firstName;
     }
+    //endregion
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    //region Getters & Setters
     public String getLastName() {
         return lastName;
     }
@@ -77,7 +66,9 @@ public class Student {
     public void setClass(Class newClass) {
         this.classes.add(newClass);
     }
+    //endregion
 
+    //region Overrides
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -93,4 +84,50 @@ public class Student {
 
         return Objects.hash(id, lastName, firstName, classes);
     }
+
+    @Override
+    public <T extends BaseEntity> void copy(T entity) throws IncompatibleEntityTypeException {
+        if (entity instanceof Student) {
+            Student sourceEntity = Student.class.cast(entity);
+
+            this.id = sourceEntity.getId();
+            this.firstName = sourceEntity.getFirstName();
+            this.lastName = sourceEntity.getLastName();
+
+            if (sourceEntity.getClasses() != null) {
+                for (Class classEntity : sourceEntity.getClasses()) {
+                    Class copied = new Class();
+                    copied.copy(classEntity);
+
+                    this.setClass(copied);
+                }
+            }
+
+        } else {
+            throw new IncompatibleEntityTypeException("Copy an entity to Student Model",
+                                                       entity.getClass().getTypeName(),
+                                                       Student.class.getTypeName());
+        }
+    }
+
+    @Override
+    public <T extends BaseEntity> void addRelatedEntity(T relatedEntity) throws IncompatibleEntityTypeException {
+        if (relatedEntity instanceof Class) {
+            setClass(Class.class.cast(relatedEntity));
+        } else {
+            throw new IncompatibleEntityTypeException("Add related entity to Student Model",
+                                                       relatedEntity.getClass().getTypeName(),
+                                                       Class.class.getTypeName());
+        }
+    }
+
+    @Override
+    public <T extends BaseEntity> Collection<T> getRelatedEntities(java.lang.Class<T> type) {
+        if (type.equals(Class.class)) {
+            return (Collection<T>) getClasses();
+        }
+
+        return null;
+    }
+    //endregion
 }

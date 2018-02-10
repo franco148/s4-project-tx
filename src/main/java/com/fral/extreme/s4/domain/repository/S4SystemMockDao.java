@@ -2,8 +2,8 @@ package com.fral.extreme.s4.domain.repository;
 
 import com.fral.extreme.s4.domain.model.Class;
 import com.fral.extreme.s4.domain.model.Student;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Repository;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.*;
@@ -59,7 +59,7 @@ public class S4SystemMockDao implements S4SystemDao {
 
     @Override
     public <T> Collection<T> persist(T[] entities) {
-        throw new NotImplementedException();
+        throw new NotYetImplementedException();
     }
 
     @Override
